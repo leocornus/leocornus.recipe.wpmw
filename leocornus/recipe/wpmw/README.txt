@@ -25,7 +25,9 @@ wp-content/plugins folder.  It supports the following options:
     The root folder of WordPress installation.  The wp-content/plugins folder is 
     within it.
 
-````
+``ignore-existing``
+
+    default is true, ignore existing folder.
 
 zc.buildout built in a set of easy to use functions to simplfy the testing for buildout
 recipe.  Check http://pypi.python.org/pypi/zc.buildout/1.5.2#testing-support for more
@@ -70,7 +72,10 @@ Run the buildout
 Check the parts folder and bin folder.
 
     >>> ls(sample_buildout, 'parts')
+    d  buildout
+    d  plugins
+
+    >>> ls(sample_buildout, 'parts', 'plugins')
     d  bp-moderation-0.1.4
     d  buddypress-1.5.1
     d  buddypress-links-0.5
-    d  buildout
