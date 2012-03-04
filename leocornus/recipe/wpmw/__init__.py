@@ -52,6 +52,9 @@ class Plugins(object):
         # get a zc.buildout download instance
         download = Download(self.buildout['buildout'])
 
+        # the wordpress plugins diretory
+        wpPlugins = self.options.get('wordpress-root') + '/wp-content/plugins/'
+
         parts = []
 
         # process the plugins one by one.
@@ -102,6 +105,9 @@ class Plugins(object):
                     parts.append(filenameDest)
 
                 shutil.move(os.path.join(base, filename), filenameDest)
+
+            # create the symlink for this plugin
+            os.symlink(dest, wpPlugins + pId)
 
             shutil.rmtree(extract_dir)
 

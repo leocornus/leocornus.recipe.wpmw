@@ -69,7 +69,7 @@ Run the buildout
     >>> print system(buildout)
     Installing wpplugins.
 
-Check the parts folder and bin folder.
+Check the parts folder to make sure all plugins are downloaded.
 
     >>> ls(sample_buildout, 'parts')
     d  buildout
@@ -79,3 +79,10 @@ Check the parts folder and bin folder.
     d  bp-moderation-0.1.4
     d  buddypress-1.5.1
     d  buddypress-links-0.5
+
+check the WordPress plugins folder to make sure all symlink are created.
+
+    >>> ls(wordpress, 'wp-content', 'plugins')
+    d  bp-moderation
+    d  buddypress
+    d  buddypress-links
