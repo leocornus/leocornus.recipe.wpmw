@@ -14,17 +14,17 @@ import zc.buildout
 # we will support different format for true.
 TRUE_VALUES = ('yes', 'true', '1', 'on')
 
-# recipe class to download and install wordpress plugins.
-class Plugins(object):
+# the base class for all recipes.
+class Base:
     """
-    download, extract plugins package and create symlink for each 
-    plugins
+    The base class will offer the general funtions.
     """
-
+    
     # constructor
     def __init__(self, buildout, name, options):
 
         self.options = options
+        # the part's name.
         self.name = name
         self.buildout = buildout
 
@@ -33,14 +33,16 @@ class Plugins(object):
             'download-cache',
             os.path.join(buildout['buildout']['directory'], 'downloads'))
 
-        # set up default if it is necessary.
-        options.setdefault('plugins-repo', 'http://downloads.wordpress.org/plugin')
+        # set up default for ignore-existing. 
         options.setdefault('ignore-existing', 'true');
-        # get a list of plugins.
-        self.plugins = [plugin.strip().split('=') for plugin in options.get('plugins', '').strip().splitlines() if plugin.strip()]
 
-    # install method
-    def install(self):
+    # download, extract, and symlink
+    def downloadExtract(self, targetFolder, srcRepo, srcList):
+        """
+        download all sources in srcList, extract them and create symlink in target
+        folder.  all sources will be saved in folder parts/PART-NAME. Each source is saved
+        in srcList as the following format: (id, version).
+        """
 
         log = logging.getLogger(self.name)
 
@@ -52,20 +54,17 @@ class Plugins(object):
         # get a zc.buildout download instance
         download = Download(self.buildout['buildout'])
 
-        # the wordpress plugins diretory
-        wpPlugins = self.options.get('wordpress-root') + '/wp-content/plugins/'
-
         parts = []
 
-        # process the plugins one by one.
-        for pId, pVersion in self.plugins:
+        # process the sources one by one.
+        for srcId, srcVersion in srcList:
             # the download url.
-            url = self.options.get('plugins-repo') + '/' + pId + '.' + pVersion + '.zip'
+            url = srcRepo + '/' + srcId + '.' + srcVersion + '.zip'
             path, is_temp = download(url)
 
-            # destination is parts/plugins/PLUGIN_ID-PLUGIN_VERSION
+            # destination is parts/PART-NAME/PLUGIN_ID-PLUGIN_VERSION
             dest = os.path.join(self.buildout['buildout']['parts-directory'], 
-                                'plugins', pId + '-' + pVersion)
+                                self.name, srcId + '-' + srcVersion)
             if not os.path.isdir(dest):
                 os.makedirs(dest)
                 parts.append(dest)
@@ -106,10 +105,43 @@ class Plugins(object):
 
                 shutil.move(os.path.join(base, filename), filenameDest)
 
-            # create the symlink for this plugin
-            os.symlink(dest, wpPlugins + pId)
+            # create the symlink for this srouce
+            linkName = os.path.join(targetFolder, srcId)
+            if os.path.exists(linkName):
+                os.unlink(linkName)
+            os.symlink(dest, linkName)
 
             shutil.rmtree(extract_dir)
+
+        return parts
+
+# recipe class to download and install wordpress plugins.
+class Plugins(Base):
+    """
+    download, extract plugins package and create symlink for each 
+    plugins
+    """
+
+    # constructor
+    def __init__(self, buildout, name, options):
+
+        # Base constructor
+        Base.__init__(self, buildout, name, options)
+
+        # set up default for plugins.
+        options.setdefault('plugins-repo', 'http://downloads.wordpress.org/plugin')
+        # get a list of plugins.
+        self.plugins = [plugin.strip().split('=') for plugin in options.get('plugins', '').strip().splitlines() if plugin.strip()]
+
+    # install method
+    def install(self):
+
+        log = logging.getLogger(self.name)
+
+        # the wordpress plugins diretory
+        wpPlugins = self.options.get('wordpress-root') + '/wp-content/plugins'
+
+        parts = self.downloadExtract(wpPlugins, self.options.get('plugins-repo'), self.plugins)
 
         return parts
 

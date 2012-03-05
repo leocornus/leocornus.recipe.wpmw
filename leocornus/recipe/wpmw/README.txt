@@ -68,14 +68,20 @@ Run the buildout
 
     >>> print system(buildout)
     Installing wpplugins.
+    Downloading http://downloads.wordpress.org/plugin/buddypress.1.5.1.zip
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-1.5.1
+    Downloading http://downloads.wordpress.org/plugin/bp-moderation.0.1.4.zip
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/bp-moderation-0.1.4
+    Downloading http://downloads.wordpress.org/plugin/buddypress-links.0.5.zip
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-links-0.5
 
 Check the parts folder to make sure all plugins are downloaded.
 
     >>> ls(sample_buildout, 'parts')
     d  buildout
-    d  plugins
+    d  wpplugins
 
-    >>> ls(sample_buildout, 'parts', 'plugins')
+    >>> ls(sample_buildout, 'parts', 'wpplugins')
     d  bp-moderation-0.1.4
     d  buddypress-1.5.1
     d  buddypress-links-0.5
