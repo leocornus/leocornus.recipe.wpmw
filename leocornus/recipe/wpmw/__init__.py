@@ -107,6 +107,7 @@ class Base:
 
             # create the symlink for this srouce
             linkName = os.path.join(targetFolder, srcId)
+            log.info('Create symlink to %s' % linkName)
             if os.path.exists(linkName):
                 os.unlink(linkName)
             os.symlink(dest, linkName)
@@ -142,6 +143,41 @@ class Plugins(Base):
         wpPlugins = self.options.get('wordpress-root') + '/wp-content/plugins'
 
         parts = self.downloadExtract(wpPlugins, self.options.get('plugins-repo'), self.plugins)
+
+        return parts
+
+    # update method.
+    def update(self):
+
+        pass
+
+# recipe class to download and install MediaWiki Extensions.
+class Extensions(Base):
+    """
+    download, extract extension packages and create symlink for each 
+    extension
+    """
+
+    # constructor
+    def __init__(self, buildout, name, options):
+
+        # Base constructor
+        Base.__init__(self, buildout, name, options)
+
+        # set up default for plugins.
+        options.setdefault('extensions-repo', 'http://')
+        # get a list of plugins.
+        self.extensions = [ext.strip().split('=') for ext in options.get('extensions', '').strip().splitlines() if ext.strip()]
+
+    # install method
+    def install(self):
+
+        log = logging.getLogger(self.name)
+
+        # the wordpress plugins diretory
+        mwExtensions = self.options.get('mediawiki-root') + '/extensions'
+
+        parts = self.downloadExtract(mwExtensions, self.options.get('extensions-repo'), self.extensions)
 
         return parts
 
