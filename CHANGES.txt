@@ -1,0 +1,13 @@
+Change History
+**************
+
+1.0.1 (2012-03-06)
+==================
+
+ - Using os.path.lexists instead of os.path.exists to make sure the
+   broken symlinks got removed.
+
+1.0.0 (2012-03-05)
+==================
+
+ - Initial release

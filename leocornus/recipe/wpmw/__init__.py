@@ -108,7 +108,7 @@ class Base:
             # create the symlink for this srouce
             linkName = os.path.join(targetFolder, srcId)
             log.info('Create symlink to %s' % linkName)
-            if os.path.exists(linkName):
+            if os.path.lexists(linkName):
                 os.unlink(linkName)
             os.symlink(dest, linkName)
 

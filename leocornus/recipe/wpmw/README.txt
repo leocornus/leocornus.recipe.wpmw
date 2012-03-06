@@ -67,6 +67,29 @@ get ready a empty WordPress plugins folder for testing.
     >>> ls(wordpress, 'wp-content')
     d  plugins
 
+try to crate a symlink in plugins folder to test the unlink function.
+
+    >>> import os
+    >>> bp = tmpdir('bp-fake')
+    >>> print bp
+    /tmp/.../bp-fake
+    >>> os.symlink(bp, os.path.join(wordpress, 'wp-content', 'plugins', 'buddypress'))
+    >>> ls(wordpress, 'wp-content', 'plugins')
+    d  buddypress
+
+create a broken symlink, we have to use os.path.lexists to check the link name exist or
+not.
+
+    >>> bplink = tmpdir('bp-link')
+    >>> os.symlink(bplink, os.path.join(wordpress, 'wp-content', 'plugins', 'buddypress-links'))
+    >>> ls(wordpress, 'wp-content', 'plugins')
+    d  buddypress
+    d  buddypress-links
+    >>> remove(bplink)
+    >>> ls(wordpress, 'wp-content', 'plugins')
+    d  buddypress
+    l  buddypress-links
+
 Try to run the Plugins recipe.  The ``sample_buildout`` is a built-in buildout object 
 provided by zc.buildout.testing package.
 

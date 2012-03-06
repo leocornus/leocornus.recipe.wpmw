@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0.0'
+version = '1.0.1'
 name = 'leocornus.recipe.wpmw'
 
 def read(*rnames):
@@ -18,6 +18,8 @@ setup(
       '**********************\n'
       + '\n' +
       read('leocornus','recipe','wpmw','README.txt')
+      + '\n' +
+      read('CHANGES.txt')
       + '\n' +
       'Download\n'
       '***********************\n'
