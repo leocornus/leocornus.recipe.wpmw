@@ -1,0 +1,2 @@
+include *.txt *.GPL
+recursive-include leocornus *.txt *.py *.zip
