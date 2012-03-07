@@ -190,3 +190,43 @@ class Extensions(Base):
     def update(self):
 
         pass
+
+# simple recipe to create symlinks from target folder to link folder.
+class Symlinks(object):
+    """
+    create symlinks for all names from target folder to link folder.
+    """
+
+    def __init__(self, buildout, name, options):
+        self.buildout = buildout
+        self.name = name
+
+        self.targetFolder = options.get('target-folder')
+        self.linkFolder = options.get('link-folder')
+        self.names = [name.strip() for name in options.get('names', '').strip().splitlines()]
+
+    def performSymlink(self, targetFolder, linkFolder, names):
+
+        log = logging.getLogger(self.name)
+
+        for name in names:
+            linkName = os.path.join(linkFolder, name)
+            if os.path.lexists(linkName):
+                os.unlink(linkName)
+
+            targetName = os.path.join(targetFolder, name)
+            if os.path.exists(targetName):
+                log.info('Create symlink to %s' % linkName)
+                os.symlink(targetName, linkName)
+            else:
+                log.info('Target %s not exist, ignoring...' % targetName)
+
+    def install(self):
+
+        self.performSymlink(self.targetFolder, self.linkFolder, self.names) 
+
+        return ''
+
+    def update(self):
+
+        pass

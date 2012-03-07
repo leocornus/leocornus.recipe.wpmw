@@ -49,6 +49,21 @@ Options for extensions recipe:
     The root folder of MediaWiki installation.  We will create symlink in its
     extensions sub-folder.
 
+Options for symlink recipe:
+
+``target-folder``
+
+    the target folder, from which we create symlink to the link_name.
+
+``link-folder``
+
+    the link folder will have all the link names.
+
+``names``
+
+    the names used to create the symlink.  The following command will be used:
+    $ ln -s target_folder/name link_folder/name
+
 zc.buildout built in a set of easy to use functions to simplfy the testing for buildout
 recipe.  Check http://pypi.python.org/pypi/zc.buildout/1.5.2#testing-support for more
 details.
@@ -203,3 +218,57 @@ check the MediaWiki extensions folder
     d  Cite
     d  SemanticForms
     d  SemanticMediaWiki
+
+Examples for symlink recipe
+===========================
+
+preparing the packages.
+
+    >>> target = tmpdir('target')
+    >>> mkdir(target, 'dirone')
+    >>> mkdir(target, 'dirtwo')
+    >>> write(target, 'one.file', 
+    ... """
+    ... empty file for testing
+    ... """)
+    >>> ls(target)
+    d  dirone
+    d  dirtwo
+    -  one.file
+    >>> links = tmpdir('links')
+    >>> ls(links)
+
+get ready the buildout config for symlink.
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = symlinks
+    ...
+    ... [symlinks]
+    ... recipe = leocornus.recipe.wpmw:symlinks
+    ... target-folder = %(target)s
+    ... link-folder = %(link)s
+    ... names = 
+    ...     dirone
+    ...     dirtwo
+    ...     one.file
+    ...     noexit.file
+    ... """ % dict(target=target, link=links))
+
+Run the buildout
+
+    >>> print system(buildout)
+    Uninstalling mwextensions.
+    Installing symlinks.
+    symlinks: Create symlink to .../links/dirone
+    symlinks: Create symlink to .../links/dirtwo
+    symlinks: Create symlink to .../links/one.file
+    symlinks: Target .../target/noexit.file not exist, ignoring...
+
+Verify the link folder.
+
+    >>> ls(links)
+    d  dirone
+    d  dirtwo
+    l  one.file

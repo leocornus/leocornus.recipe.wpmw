@@ -1,6 +1,15 @@
 Change History
 **************
 
+1.1.0 (2012-03-07)
+=================
+
+ - Add the part directory to install result, so buildout will remove
+   it during uninstalling.
+
+ - New symlinks recipe to create symlinks from target folder to link
+   folder for all names.
+
 1.0.1 (2012-03-06)
 ==================
 
