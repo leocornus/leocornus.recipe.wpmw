@@ -27,7 +27,7 @@ setup(
     classifiers=[
      'Framework :: Buildout',
      'Intended Audience :: Developers',
-     'License :: OSI Approved :: GNU GENERAL PUBLIC LICENSE',
+     'License :: OSI Approved :: GNU General Public License (GPL)',
      'Topic :: Software Development :: Build Tools',
      'Topic :: Software Development :: Libraries :: Python Modules',
       ],
