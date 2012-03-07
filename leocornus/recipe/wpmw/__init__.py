@@ -55,6 +55,11 @@ class Base:
         download = Download(self.buildout['buildout'])
 
         parts = []
+        # add the base directory name to parts, so it will be removed during
+        # uninstalling.
+        partdir = os.path.join(self.buildout['buildout']['parts-directory'],
+                               self.name)
+        parts.append(partdir)
 
         # process the sources one by one.
         for srcId, srcVersion in srcList:

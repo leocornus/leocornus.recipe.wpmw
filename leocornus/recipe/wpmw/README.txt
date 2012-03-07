@@ -192,7 +192,6 @@ check the parts folder.
     >>> ls(sample_buildout, 'parts')
     d  buildout
     d  mwextensions
-    d  wpplugins
     >>> ls(sample_buildout, 'parts', 'mwextensions')
     d  Cite-r37577
     d  SemanticForms-1.9.1
