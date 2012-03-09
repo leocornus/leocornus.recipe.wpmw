@@ -229,4 +229,4 @@ class Symlinks(object):
 
     def update(self):
 
-        pass
+        self.performSymlink(self.targetFolder, self.linkFolder, self.names)

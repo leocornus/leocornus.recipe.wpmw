@@ -1,8 +1,13 @@
 Change History
 **************
 
+1.1.1 (2012-03-09)
+==================
+
+ - make sure to create symlinks during buildout updating.
+
 1.1.0 (2012-03-07)
-=================
+==================
 
  - Add the part directory to install result, so buildout will remove
    it during uninstalling.
