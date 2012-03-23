@@ -35,6 +35,8 @@ class Base:
 
         # set up default for ignore-existing. 
         options.setdefault('ignore-existing', 'true');
+        # set up default value for action
+        options.setdefault('action', 'symlink');
 
     # download, extract, and symlink
     def downloadExtract(self, targetFolder, srcRepo, srcList):
@@ -110,12 +112,26 @@ class Base:
 
                 shutil.move(os.path.join(base, filename), filenameDest)
 
-            # create the symlink for this srouce
-            linkName = os.path.join(targetFolder, srcId)
-            log.info('Create symlink to %s' % linkName)
-            if os.path.lexists(linkName):
-                os.unlink(linkName)
-            os.symlink(dest, linkName)
+            # create the symlink or copy for this srouce
+            targetPath = os.path.join(targetFolder, srcId)
+            # add the dest folder to parts, so it will be removed during
+            # uninstalling.
+            parts.append(targetPath)
+            if self.options['action'].strip().lower() == 'copy':
+                log.info('Rename to %s' % targetPath)
+                if os.path.islink(targetPath):
+                    os.unlink(targetPath)
+                elif os.path.exists(targetPath):
+                    shutil.rmtree(targetPath)
+                shutil.move(dest, targetPath)
+            else:
+                log.info('Create symlink to %s' % targetPath)
+                if os.path.lexists(targetPath):
+                    os.unlink(targetPath)
+                os.symlink(dest, targetPath)
+                # add the dest folder to parts, so it will be removed during
+                # uninstalling.
+                parts.append(dest)
 
             shutil.rmtree(extract_dir)
 

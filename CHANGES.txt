@@ -1,10 +1,17 @@
 Change History
 **************
 
+1.2.0 (2012-03-23)
+==================
+
+ - Adding the ``action`` option for both ``plugins`` and ``extensions``
+   recipes.  It has ``symlink`` as the default value and ``copy`` to 
+   do hardcopy instead.
+
 1.1.1 (2012-03-09)
 ==================
 
- - make sure to create symlinks during buildout updating.
+ - Make sure to create symlinks during buildout updating.
 
 1.1.0 (2012-03-07)
 ==================

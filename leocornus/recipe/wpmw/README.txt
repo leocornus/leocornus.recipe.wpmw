@@ -13,7 +13,13 @@ Options for all recipes:
 
 ``ignore-existing``
 
-    default is true, ignore existing folder.
+    Default is true, ignore existing folder.
+
+``action``
+
+    There are 2 values for this option: ``symlink`` and ``copy``.
+    Default value is ``symlink``.  This option will be ignored for ``symlink``
+    recipe.  
 
 Options for plugins recipe:
 
@@ -92,7 +98,7 @@ try to crate a symlink in plugins folder to test the unlink function.
     >>> ls(wordpress, 'wp-content', 'plugins')
     d  buddypress
 
-create a broken symlink, we have to use os.path.lexists to check the link name exist or
+create a broken symlink, we have to use ``os.path.lexists`` to check the link name exist or
 not.
 
     >>> bplink = tmpdir('bp-link')
@@ -149,6 +155,37 @@ Check the parts folder to make sure all plugins are downloaded.
 
 check the WordPress plugins folder to make sure all symlink are created.
 
+    >>> ls(wordpress, 'wp-content', 'plugins')
+    d  bp-moderation
+    d  buddypress
+    d  buddypress-links
+
+testing the copy action.  We should not expect download now, since the 
+buildout will get them from download cache.
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = wpplugins
+    ...
+    ... [wpplugins]
+    ... recipe = leocornus.recipe.wpmw:plugins
+    ... action = copy
+    ... plugins = 
+    ...     buddypress=1.5.1
+    ...     bp-moderation=0.1.4
+    ...     buddypress-links=0.5
+    ... wordpress-root = %(wordpress)s
+    ... """ % dict(wordpress=wordpress))
+    >>> print system(buildout)
+    Uninstalling wpplugins.
+    Installing wpplugins.
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-1.5.1
+    wpplugins: Rename to .../wordpress/wp-content/plugins/buddypress
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/bp-moderation-0.1.4
+    wpplugins: Rename to .../wordpress/wp-content/plugins/bp-moderation
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-links-0.5
+    wpplugins: Rename to .../wordpress/wp-content/plugins/buddypress-links
     >>> ls(wordpress, 'wp-content', 'plugins')
     d  bp-moderation
     d  buddypress
@@ -214,6 +251,37 @@ check the parts folder.
 
 check the MediaWiki extensions folder
 
+    >>> ls(mediawiki, 'extensions')
+    d  Cite
+    d  SemanticForms
+    d  SemanticMediaWiki
+
+Test the copy action.
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... """
+    ... [buildout]
+    ... parts = mwextensions
+    ... 
+    ... [mwextensions]
+    ... recipe = leocornus.recipe.wpmw:extensions
+    ... action = copy
+    ... extensions = 
+    ...     Cite=r37577
+    ...     SemanticForms=1.9.1
+    ...     SemanticMediaWiki=1.5.1
+    ... extensions-repo = %(server)srepos
+    ... mediawiki-root = %(mediawiki)s
+    ... """ % dict(server=server, mediawiki=mediawiki))
+    >>> print system(buildout)
+    Uninstalling mwextensions.
+    Installing mwextensions.
+    mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/Cite-r37577
+    mwextensions: Rename to .../mediawiki/extensions/Cite
+    mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/SemanticForms-1.9.1
+    mwextensions: Rename to .../mediawiki/extensions/SemanticForms
+    mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/SemanticMediaWiki-1.5.1
+    mwextensions: Rename to .../mediawiki/extensions/SemanticMediaWiki
     >>> ls(mediawiki, 'extensions')
     d  Cite
     d  SemanticForms
