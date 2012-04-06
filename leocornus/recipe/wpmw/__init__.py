@@ -207,6 +207,40 @@ class Extensions(Base):
 
         pass
 
+# the recipe will download and extract the list packages to destination.
+class Deploy(Base):
+    """
+    Download and extract packages to the destination folder.
+    """
+
+    # constructor
+    def __init__(self, buildout, name, options):
+
+        # Base constructor
+        Base.__init__(self, buildout, name, options)
+
+        # set up default for plugins.
+        options.setdefault('packages-repo', 'http://downloads.wordpress.org/plugin')
+        # get a list of plugins.
+        self.packages = [package.strip().split('=') for package in options.get('packages', '').strip().splitlines() if package.strip()]
+
+    # install method
+    def install(self):
+
+        log = logging.getLogger(self.name)
+
+        # the destination diretory
+        dest = self.options.get('destination')
+
+        parts = self.downloadExtract(dest, self.options.get('packages-repo'), self.packages)
+
+        return parts
+
+    # update method.
+    def update(self):
+
+        pass
+
 # simple recipe to create symlinks from target folder to link folder.
 class Symlinks(object):
     """

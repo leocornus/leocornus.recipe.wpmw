@@ -15,47 +15,28 @@ Options for all recipes:
 
     Default is true, ignore existing folder.
 
+Options for ``deploy`` recipe:
+
+``packages``
+
+    A list of packages id and version at format id=version.
+    e.g. SomeSkin=1.1
+
+``packages-repo``
+
+    The base URL, where we could download the packages.
+
+``destination``
+
+    The target folder where the packages are extracted to.
+
 ``action``
 
     There are 2 values for this option: ``symlink`` and ``copy``.
     Default value is ``symlink``.  This option will be ignored for ``symlink``
-    recipe.  
+    and ``download`` recipes.  
 
-Options for plugins recipe:
-
-``plugins``
-
-    A list of plugins id and version at format id=version. 
-    e.g. buddypress=1.5.1
-
-``plugins-repo``
-
-    The base URL to download the plugins, default is
-    ``http://downloads.wordpress.org/plugin``.  This option allow user to get
-    plugins from an interal repository.
-
-``wordpress-root``
-
-    The root folder of WordPress installation.  The wp-content/plugins folder
-    is within it.
-
-Options for extensions recipe:
-
-``extensions``
-
-    A list of extensions id and version at format id=version.
-    e.g. SemanticForms=2.4
-
-``extensions-repo``
-
-    The base URL, where we could download the extensions.
-
-``mediawiki-root``
-
-    The root folder of MediaWiki installation.  We will create symlink in its
-    extensions sub-folder.
-
-Options for symlink recipe:
+Options for ``symlink`` recipe:
 
 ``target-folder``
 
@@ -74,18 +55,22 @@ zc.buildout built in a set of easy to use functions to simplfy the testing for b
 recipe.  Check http://pypi.python.org/pypi/zc.buildout/1.5.2#testing-support for more
 details.
 
-Examples for WordPress Plugins
-==============================
+Examples for deploy recipe
+==========================
 
-get ready a empty WordPress plugins folder for testing.
+Prepare the testing server for download
 
     >>> import os.path
-    >>> wordpress = tmpdir('wordpress')
-    >>> mkdir(wordpress, 'wp-content')
-    >>> ls(wordpress)
-    d  wp-content
-    >>> mkdir(wordpress, 'wp-content', 'plugins')
-    >>> ls(wordpress, 'wp-content')
+    >>> testdir = join(os.path.dirname(__file__), 'testdata')
+    >>> server = start_server(testdir)
+
+Get ready the testing folders.
+
+    >>> dest = tmpdir('dest')
+    >>> mkdir(dest, 'extensions')
+    >>> mkdir(dest, 'plugins')
+    >>> ls(dest)
+    d  extensions
     d  plugins
 
 try to crate a symlink in plugins folder to test the unlink function.
@@ -94,39 +79,50 @@ try to crate a symlink in plugins folder to test the unlink function.
     >>> bp = tmpdir('bp-fake')
     >>> print bp
     /tmp/.../bp-fake
-    >>> os.symlink(bp, os.path.join(wordpress, 'wp-content', 'plugins', 'buddypress'))
-    >>> ls(wordpress, 'wp-content', 'plugins')
+    >>> os.symlink(bp, os.path.join(dest, 'plugins', 'buddypress'))
+    >>> ls(dest, 'plugins')
     d  buddypress
 
 create a broken symlink, we have to use ``os.path.lexists`` to check the link name exist or
 not.
 
     >>> bplink = tmpdir('bp-link')
-    >>> os.symlink(bplink, os.path.join(wordpress, 'wp-content', 'plugins', 'buddypress-links'))
-    >>> ls(wordpress, 'wp-content', 'plugins')
+    >>> os.symlink(bplink, os.path.join(dest, 'plugins', 'buddypress-links'))
+    >>> ls(dest, 'plugins')
     d  buddypress
     d  buddypress-links
     >>> remove(bplink)
-    >>> ls(wordpress, 'wp-content', 'plugins')
+    >>> ls(dest, 'plugins')
     d  buddypress
     l  buddypress-links
 
-Try to run the Plugins recipe.  The ``sample_buildout`` is a built-in buildout object 
-provided by zc.buildout.testing package.
+Buildout file to testing deployment with default symlink action.
 
     >>> write(sample_buildout, 'buildout.cfg',
     ... """
     ... [buildout]
-    ... parts = wpplugins
-    ...
+    ... parts = 
+    ...     wpplugins
+    ...     mwextensions
+    ... 
     ... [wpplugins]
-    ... recipe = leocornus.recipe.wpmw:plugins
-    ... plugins = 
+    ... recipe = leocornus.recipe.wpmw:deploy
+    ... packages = 
     ...     buddypress=1.5.1
     ...     bp-moderation=0.1.4
     ...     buddypress-links=0.5
-    ... wordpress-root = %(wordpress)s
-    ... """ % dict(wordpress=wordpress))
+    ... packages-repo = http://downloads.wordpress.org/plugin
+    ... destination = %(dest)s/plugins
+    ...
+    ... [mwextensions]
+    ... recipe = leocornus.recipe.wpmw:deploy
+    ... packages = 
+    ...     Cite=r37577
+    ...     SemanticForms=1.9.1
+    ...     SemanticMediaWiki=1.5.1
+    ... packages-repo = %(server)srepos
+    ... destination = %(dest)s/extensions
+    ... """ % dict(server=server, dest=dest))
 
 Run the buildout
 
@@ -134,155 +130,86 @@ Run the buildout
     Installing wpplugins.
     Downloading http://downloads.wordpress.org/plugin/buddypress.1.5.1.zip
     wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-1.5.1
-    wpplugins: Create symlink to .../wordpress/wp-content/plugins/buddypress
+    wpplugins: Create symlink to .../dest/plugins/buddypress
     Downloading http://downloads.wordpress.org/plugin/bp-moderation.0.1.4.zip
     wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/bp-moderation-0.1.4
-    wpplugins: Create symlink to .../wordpress/wp-content/plugins/bp-moderation
+    wpplugins: Create symlink to .../dest/plugins/bp-moderation
     Downloading http://downloads.wordpress.org/plugin/buddypress-links.0.5.zip
     wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-links-0.5
-    wpplugins: Create symlink to .../wordpress/wp-content/plugins/buddypress-links
-
-Check the parts folder to make sure all plugins are downloaded.
-
-    >>> ls(sample_buildout, 'parts')
-    d  buildout
-    d  wpplugins
-
-    >>> ls(sample_buildout, 'parts', 'wpplugins')
-    d  bp-moderation-0.1.4
-    d  buddypress-1.5.1
-    d  buddypress-links-0.5
-
-check the WordPress plugins folder to make sure all symlink are created.
-
-    >>> ls(wordpress, 'wp-content', 'plugins')
-    d  bp-moderation
-    d  buddypress
-    d  buddypress-links
-
-testing the copy action.  We should not expect download now, since the 
-buildout will get them from download cache.
-
-    >>> write(sample_buildout, 'buildout.cfg',
-    ... """
-    ... [buildout]
-    ... parts = wpplugins
-    ...
-    ... [wpplugins]
-    ... recipe = leocornus.recipe.wpmw:plugins
-    ... action = copy
-    ... plugins = 
-    ...     buddypress=1.5.1
-    ...     bp-moderation=0.1.4
-    ...     buddypress-links=0.5
-    ... wordpress-root = %(wordpress)s
-    ... """ % dict(wordpress=wordpress))
-    >>> print system(buildout)
-    Uninstalling wpplugins.
-    Installing wpplugins.
-    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-1.5.1
-    wpplugins: Rename to .../wordpress/wp-content/plugins/buddypress
-    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/bp-moderation-0.1.4
-    wpplugins: Rename to .../wordpress/wp-content/plugins/bp-moderation
-    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-links-0.5
-    wpplugins: Rename to .../wordpress/wp-content/plugins/buddypress-links
-    >>> ls(wordpress, 'wp-content', 'plugins')
-    d  bp-moderation
-    d  buddypress
-    d  buddypress-links
-
-Examples for MediaWiki Extensions
-=================================
-
-We need a temp server for this testing
-
-    >>> import os.path
-    >>> testdata = join(os.path.dirname(__file__), 'testdata')
-    >>> server = start_server(testdata)
-
-Prepare an empty MediaWiki extensions folder for testing
-
-    >>> mediawiki = tmpdir('mediawiki')
-    >>> mkdir(mediawiki, 'extensions')
-    >>> ls(mediawiki)
-    d  extensions
-
-A simple buildout configuration file.
-
-    >>> write(sample_buildout, 'buildout.cfg',
-    ... """
-    ... [buildout]
-    ... parts = mwextensions
-    ... 
-    ... [mwextensions]
-    ... recipe = leocornus.recipe.wpmw:extensions
-    ... extensions = 
-    ...     Cite=r37577
-    ...     SemanticForms=1.9.1
-    ...     SemanticMediaWiki=1.5.1
-    ... extensions-repo = %(server)srepos
-    ... mediawiki-root = %(mediawiki)s
-    ... """ % dict(server=server, mediawiki=mediawiki))
-
-Run the buildout and check the result.
-
-    >>> print system(buildout)
-    Uninstalling wpplugins.
+    wpplugins: Create symlink to .../dest/plugins/buddypress-links
     Installing mwextensions.
     Downloading http://.../repos/Cite.r37577.zip
     mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/Cite-r37577
-    mwextensions: Create symlink to .../mediawiki/extensions/Cite
+    mwextensions: Create symlink to .../dest/extensions/Cite
     Downloading http://.../repos/SemanticForms.1.9.1.zip
     mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/SemanticForms-1.9.1
-    mwextensions: Create symlink to .../mediawiki/extensions/SemanticForms
+    mwextensions: Create symlink to .../dest/extensions/SemanticForms
     Downloading http://.../repos/SemanticMediaWiki.1.5.1.zip
     mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/SemanticMediaWiki-1.5.1
-    mwextensions: Create symlink to .../mediawiki/extensions/SemanticMediaWiki
+    mwextensions: Create symlink to .../dest/extensions/SemanticMediaWiki
 
-check the parts folder.
+Check the destnation folder
 
-    >>> ls(sample_buildout, 'parts')
-    d  buildout
-    d  mwextensions
-    >>> ls(sample_buildout, 'parts', 'mwextensions')
-    d  Cite-r37577
-    d  SemanticForms-1.9.1
-    d  SemanticMediaWiki-1.5.1
-
-check the MediaWiki extensions folder
-
-    >>> ls(mediawiki, 'extensions')
+    >>> ls(dest, 'plugins')
+    d  bp-moderation
+    d  buddypress
+    d  buddypress-links
+    >>> ls(dest, 'extensions')
     d  Cite
     d  SemanticForms
     d  SemanticMediaWiki
 
-Test the copy action.
+Now, let's try the hard copy action.
 
     >>> write(sample_buildout, 'buildout.cfg',
     ... """
     ... [buildout]
-    ... parts = mwextensions
+    ... parts = 
+    ...     wpplugins
+    ...     mwextensions
     ... 
-    ... [mwextensions]
-    ... recipe = leocornus.recipe.wpmw:extensions
+    ... [wpplugins]
+    ... recipe = leocornus.recipe.wpmw:deploy
     ... action = copy
-    ... extensions = 
+    ... packages = 
+    ...     buddypress=1.5.1
+    ...     bp-moderation=0.1.4
+    ...     buddypress-links=0.5
+    ... packages-repo = http://downloads.wordpress.org/plugin
+    ... destination = %(dest)s/plugins
+    ...
+    ... [mwextensions]
+    ... recipe = leocornus.recipe.wpmw:deploy
+    ... action = copy
+    ... packages = 
     ...     Cite=r37577
     ...     SemanticForms=1.9.1
     ...     SemanticMediaWiki=1.5.1
-    ... extensions-repo = %(server)srepos
-    ... mediawiki-root = %(mediawiki)s
-    ... """ % dict(server=server, mediawiki=mediawiki))
+    ... packages-repo = %(server)srepos
+    ... destination = %(dest)s/extensions
+    ... """ % dict(server=server, dest=dest))
     >>> print system(buildout)
     Uninstalling mwextensions.
+    Uninstalling wpplugins.
+    Installing wpplugins.
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-1.5.1
+    wpplugins: Rename to .../dest/plugins/buddypress
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/bp-moderation-0.1.4
+    wpplugins: Rename to .../dest/plugins/bp-moderation
+    wpplugins: Extracting package to .../sample-buildout/parts/wpplugins/buddypress-links-0.5
+    wpplugins: Rename to .../dest/plugins/buddypress-links
     Installing mwextensions.
     mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/Cite-r37577
-    mwextensions: Rename to .../mediawiki/extensions/Cite
+    mwextensions: Rename to .../dest/extensions/Cite
     mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/SemanticForms-1.9.1
-    mwextensions: Rename to .../mediawiki/extensions/SemanticForms
+    mwextensions: Rename to .../dest/extensions/SemanticForms
     mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/SemanticMediaWiki-1.5.1
-    mwextensions: Rename to .../mediawiki/extensions/SemanticMediaWiki
-    >>> ls(mediawiki, 'extensions')
+    mwextensions: Rename to .../dest/extensions/SemanticMediaWiki
+    >>> ls(dest, 'plugins')
+    d  bp-moderation
+    d  buddypress
+    d  buddypress-links
+    >>> ls(dest, 'extensions')
     d  Cite
     d  SemanticForms
     d  SemanticMediaWiki
@@ -328,6 +255,7 @@ Run the buildout
 
     >>> print system(buildout)
     Uninstalling mwextensions.
+    Uninstalling wpplugins.
     Installing symlinks.
     symlinks: Create symlink to .../links/dirone
     symlinks: Create symlink to .../links/dirtwo

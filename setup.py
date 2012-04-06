@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.2.0'
+version = '1.3.0'
 name = 'leocornus.recipe.wpmw'
 
 def read(*rnames):
@@ -53,8 +53,7 @@ setup(
     tests_require = ['zope.testing'],
     test_suite = '%s.tests.test_suite' % name,
 
-    entry_points = { 'zc.buildout' : ['default = leocornus.recipe.wpmw:Plugins',
-                                      'plugins = leocornus.recipe.wpmw:Plugins',
-                                      'extensions = leocornus.recipe.wpmw:Extensions',
+    entry_points = { 'zc.buildout' : ['default = leocornus.recipe.wpmw:Deploy',
+                                      'deploy = leocornus.recipe.wpmw:Deploy',
                                       'symlinks = leocornus.recipe.wpmw:Symlinks'] },
 )
