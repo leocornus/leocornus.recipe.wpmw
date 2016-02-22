@@ -1,4 +1,4 @@
-|travis|_
+|travis|_ |pypi-version|_ |pypi-download|_ |pypi-license|_ 
 
 leocornus.recipe.wpmw
 =====================
@@ -13,3 +13,9 @@ License
 
 .. |travis| image:: https://api.travis-ci.org/leocornus/leocornus.recipe.wpmw.png
 .. _travis: https://travis-ci.org/leocornus/leocornus.recipe.wpmw
+.. |pypi-version| image:: http://img.shields.io/pypi/v/leocornus.recipe.wpmw.svg
+.. _pypi-version: https://pypi.python.org/pypi/leocornus.recipe.wpmw
+.. |pypi-download| image:: http://img.shields.io/pypi/dm/leocornus.recipe.wpmw.svg
+.. _pypi-download: https://pypi.python.org/pypi/leocornus.recipe.wpmw
+.. |pypi-license| image:: http://img.shields.io/pypi/l/leocornus.recipe.wpmw.svg
+.. _pypi-license: https://pypi.python.org/pypi/leocornus.recipe.wpmw
