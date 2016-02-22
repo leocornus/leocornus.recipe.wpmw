@@ -147,6 +147,7 @@ Run the buildout
     Downloading http://.../repos/SemanticMediaWiki.1.5.1.zip
     mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/SemanticMediaWiki-1.5.1
     mwextensions: Create symlink to .../dest/extensions/SemanticMediaWiki
+    ...
 
 Check the destnation folder
 
@@ -205,6 +206,7 @@ Now, let's try the hard copy action.
     mwextensions: Rename to .../dest/extensions/SemanticForms
     mwextensions: Extracting package to .../sample-buildout/parts/mwextensions/SemanticMediaWiki-1.5.1
     mwextensions: Rename to .../dest/extensions/SemanticMediaWiki
+    ...
     >>> ls(dest, 'plugins')
     d  bp-moderation
     d  buddypress
