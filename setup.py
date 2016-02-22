@@ -12,14 +12,14 @@ setup(
     version=version,
     description="zc.buildout recipe for managing WordPress plugins/themes and MediaWiki extensions",
     long_description= (
-      read('README')
+      read('README.rst')
       + '\n' +
       'Detailed Documentation\n'
       '**********************\n'
       + '\n' +
-      read('leocornus','recipe','wpmw','README.txt')
+      read('leocornus','recipe','wpmw','README.rst')
       + '\n' +
-      read('CHANGES.txt')
+      read('CHANGES.rst')
       + '\n' +
       'Download\n'
       '***********************\n'
@@ -45,7 +45,7 @@ setup(
 
     zip_safe=False,
     install_requires = [
-      'zc.buildout >= 1.4.0',
+      'zc.buildout',
       'setuptools',],
     extras_require={
       'test' : ['zope.testing'],
