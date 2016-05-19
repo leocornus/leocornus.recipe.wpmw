@@ -31,6 +31,19 @@ def test_suite():
         ),
     )
 
+    # add the test-wmflabs.rst, 
+    # which will testing download from 
+    # http://extdist.wmflabs.org/dist/.
+    # including both extensions and skins.
+    suite.addTest(
+        doctest.DocFileSuite(
+            'test-wmflabs.rst',
+            setUp=setUp,
+            tearDown=zc.buildout.testing.buildoutTearDown,
+            optionflags=optionflags,
+        ),
+    )
+
     return suite
 
 if __name__ == '__main__':
