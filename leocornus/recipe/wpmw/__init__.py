@@ -47,6 +47,10 @@ class Base:
         """
 
         log = logging.getLogger(self.name)
+        # the the file extension.
+        fileExtension = self.options.get('file-extension')
+        # get the name version separator.
+        nameVersionSeparator = self.options.get('separator')
 
         # the zc.buildout download facility will save everything in download
         # cache.  We need make sure it is exist.
@@ -66,7 +70,7 @@ class Base:
         # process the sources one by one.
         for srcId, srcVersion in srcList:
             # the download url.
-            url = srcRepo + '/' + srcId + '.' + srcVersion + '.zip'
+            url = srcRepo + '/' + srcId + nameVersionSeparator + srcVersion + fileExtension 
             path, is_temp = download(url)
 
             # destination is parts/PART-NAME/PLUGIN_ID-PLUGIN_VERSION
@@ -221,6 +225,10 @@ class Deploy(Base):
 
         # set up default for plugins.
         options.setdefault('packages-repo', 'http://downloads.wordpress.org/plugin')
+        # set default file extension: .zip
+        options.setdefault('file-extension', '.zip')
+        # set default name version separator: .
+        options.setdefault('separator', '.')
         # get a list of plugins.
         self.packages = [package.strip().split('=') for package in options.get('packages', '').strip().splitlines() if package.strip()]
 
