@@ -43,6 +43,7 @@ Create the **buildout.cfg** file.::
   ...     Cite=REL1_26-dc872e6
   ...     SemanticForms=REL1_26-c514c90
   ...     CirrusSearch=REL1_26-c80d8ec
+  ...     MultimediaViewer=REL1_26-a312b66
   ... file-extension = .tar.gz
   ... separator = -
   ... packages-repo = https://extdist.wmflabs.org/dist/extensions
@@ -67,3 +68,17 @@ execute the buildout::
   ...
   Downloading ...
   ...
+
+Check result
+============
+
+List the destination folder to verify the results.::
+
+  >>> ls(dest, 'skins')
+  d  Example
+  d  Vector
+  >>> ls(dest, 'extensions')
+  d  CirrusSearch
+  d  Cite
+  d  MultimediaViewer
+  d  SemanticForms
