@@ -18,14 +18,19 @@ def setUp(test):
     zc.buildout.testing.install_develop('leocornus.recipe.wpmw', test)
 
 def test_suite():
-    suite = unittest.TestSuite((
-            doctest.DocFileSuite(
-                'README.rst',
-                setUp=setUp,
-                tearDown=zc.buildout.testing.buildoutTearDown,
-                optionflags=optionflags,
-                ),
-            ))
+
+    suite = unittest.TestSuite()
+
+    # add the README.rst
+    suite.addTest(
+        doctest.DocFileSuite(
+            'README.rst',
+            setUp=setUp,
+            tearDown=zc.buildout.testing.buildoutTearDown,
+            optionflags=optionflags,
+        ),
+    )
+
     return suite
 
 if __name__ == '__main__':
