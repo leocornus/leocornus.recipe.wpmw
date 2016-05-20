@@ -17,6 +17,8 @@ created.::
   >>> ls(dest)
   d extensions
   d skins
+  >>> ls(dest, 'extensions')
+  >>> ls(dest, 'skins')
 
 Create the **buildout.cfg** file.::
 
