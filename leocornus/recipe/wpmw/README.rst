@@ -26,6 +26,14 @@ Options for ``deploy`` recipe:
 
     The base URL, where we could download the packages.
 
+``file-extension``
+
+    set the file extension for each package. default is **.zip**
+
+``separator``
+
+    set the separator between name and version. default is **.**.
+
 ``destination``
 
     The target folder where the packages are extracted to.
@@ -33,8 +41,8 @@ Options for ``deploy`` recipe:
 ``action``
 
     There are 2 values for this option: ``symlink`` and ``copy``.
-    Default value is ``symlink``.  This option will be ignored for ``symlink``
-    and ``download`` recipes.  
+    Default value is ``symlink``.  This option will be 
+    ignored for ``symlink`` and ``download`` recipes.  
 
 Options for ``symlink`` recipe:
 

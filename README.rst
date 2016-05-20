@@ -6,6 +6,9 @@ leocornus.recipe.wpmw
 A buildout recipe trying to provide an easy way to manage WordPress Plugins, themes and 
 MediaWiki Extenstions.
 
+Check `package README <leocornus/recipe/wpmw/README.rst>`_ for 
+options and samples.
+
 License
 -------
 
